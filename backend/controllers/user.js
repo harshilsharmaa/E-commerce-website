@@ -11,7 +11,7 @@ exports.register = async(req, res) => {
 
         if(!req.body.name || !req.body.email || !req.body.password){
             return res.status(400).json({
-                message: 'Please fill all the fields',
+                error: 'Please fill all the fields',
                 success: false
             })
         }
@@ -26,7 +26,7 @@ exports.register = async(req, res) => {
 
         if(checkUserEmail){
             return res.status(400).json({
-                message: 'User with this email already exists',
+                error: 'User with this email already exists',
                 success: false
             })
         }
@@ -66,7 +66,7 @@ exports.login = async(req, res) => {
         const user = await User.findOne({email}).select('+password');
         if(!user){
             return res.status(400).json({
-                message: 'User with this email does not exist',
+                error: 'User with this email does not exist',
                 success: false
             })
         }
@@ -74,7 +74,7 @@ exports.login = async(req, res) => {
         const isMatch = await user.comparePassword(password);
         if(!isMatch){
             return res.status(400).json({
-                message: 'Invalid password',
+                error: 'Invalid password',
                 success: false
             })
         }
@@ -92,7 +92,7 @@ exports.login = async(req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
             success: false
         })
     }
@@ -108,7 +108,7 @@ exports.logout = async(req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
             success: false
         })
     }
@@ -124,7 +124,7 @@ exports.requestOTPForPhone = async(req,res)=>{
 
         if(user){
             return res.status(400).json({
-                message: 'User with this phone number already exists',
+                error: 'User with this phone number already exists',
                 success: false
             })
         }
@@ -168,7 +168,7 @@ exports.requestOTPForPhone = async(req,res)=>{
     }
     catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
             success: false
         })
     }
@@ -184,7 +184,7 @@ exports.verifyOTP = async(req, res) => {
         if (otpHolder.length === 0){
 
             return res.status(400).json({
-                message: "You are using expired otp!",
+                error: "You are using expired otp!",
                 success: false
             })
         }
@@ -213,14 +213,14 @@ exports.verifyOTP = async(req, res) => {
         }
         else {
             return res.status(400).json({
-                message: 'Invalid OTP',
+                error: 'Invalid OTP',
                 success: false
             })
         }
 
     } catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
             success: false
         })
     }
@@ -230,7 +230,7 @@ exports.updatePassword = async(req, res) => {
     try {
         if(!req.body.oldPassword || !req.body.newPassword){
             return res.status(400).json({
-                message: 'Please fill all the fields',
+                error: 'Please fill all the fields',
                 success: false
             })
         }
@@ -241,7 +241,7 @@ exports.updatePassword = async(req, res) => {
 
         if(!isMatch){
             return res.status(400).json({
-                message: 'Invalid password',
+                error: 'Invalid password',
                 success: false
             })
         }
@@ -256,7 +256,7 @@ exports.updatePassword = async(req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
             success: false
         })
     }
@@ -268,7 +268,7 @@ exports.updateAddress = async(req, res) => {
 
         if(!req.body.address){
             return res.status(400).json({
-                message: 'Please fill all the fields',
+                error: 'Please fill all the fields',
                 success: false
             })
         }
@@ -283,7 +283,7 @@ exports.updateAddress = async(req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
             success: false
         })
     }
@@ -293,7 +293,7 @@ exports.forgotPassword = async(req, res) => {
     try {
         if(!req.body.email){
             return res.status(400).json({
-                message: 'Please fill all the fields',
+                error: 'Please fill all the fields',
                 success: false
             })
         }
@@ -301,7 +301,7 @@ exports.forgotPassword = async(req, res) => {
         const user = await User.findOne({email: req.body.email});
         if(!user){
             return res.status(400).json({
-                message: 'User with this email does not exist',
+                error: 'User with this email does not exist',
                 success: false
             })
         }
@@ -333,14 +333,14 @@ exports.forgotPassword = async(req, res) => {
             await user.save();
 
             res.status(500).json({
-                message: error.message,
+                error: error.message,
                 success: false
             })
         }
     }
     catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
         })    
     }
 }
@@ -358,14 +358,14 @@ exports.resetPassword = async(req,res)=>{
 
         if(!user){
             return res.status(401).json({
-                message: "Invalid or expired token",
+                error: "Invalid or expired token",
                 success: false
             })
         }
 
         if(req.body.password ===undefined){
             return res.status(400).json({
-                message: "Password is required",
+                error: "Password is required",
                 success: false
             })
         }
@@ -384,7 +384,7 @@ exports.resetPassword = async(req,res)=>{
         
     } catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
             success: false
         })
     }
@@ -405,7 +405,27 @@ exports.myProfile = async(req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            message: error.message,
+            error: error.message,
+            success: false
+        })
+    }
+}
+
+exports.deleteProfile = async(req,res)=>{
+    try {
+
+        const email = req.body.email;
+        const user = await User.deleteOne({email});
+        console.log(user);
+
+        res.status(200).json({
+            message:"User Removed Successfully",
+            success: true
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            error: error.message,
             success: false
         })
     }

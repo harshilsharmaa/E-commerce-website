@@ -14,7 +14,8 @@ resetPassword,
 requestOTPForPhone,
 verifyOTP,
 myProfile,
-updateAddress
+updateAddress,
+deleteProfile
 
 } = require('../controllers/user');
 
@@ -36,5 +37,6 @@ router.route('/forgot/password').post(forgotPassword);
 router.route('/password/reset/:token').put(resetPassword);
 
 
+router.route('/delete/profile').put(deleteProfile);
 
 module.exports = router;
